@@ -1,2 +1,4 @@
 *.pb
 *.venv
+*.tflite
+*.h5
