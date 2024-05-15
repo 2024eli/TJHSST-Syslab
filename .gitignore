@@ -2,3 +2,4 @@
 *.venv
 *.tflite
 *.h5
+*.keras
