@@ -1,10 +1,9 @@
-import sys
-sys.path.insert(-1, "/usr/lib/python3/dist-packages/")
 
 import numpy as np
 import pandas as pd
 import random
 import os
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import zipfile
@@ -25,8 +24,6 @@ from keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization
 import keras.applications.mobilenet_v2 as mobilenetv2
 
 import numpy as np
@@ -40,17 +37,6 @@ import numpy as np
 
 import os
 
-# Increasing the image size didn't result in increasing the training accuracy
-IMAGE_WIDTH = 224    
-IMAGE_HEIGHT = 224
-IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
-IMAGE_CHANNELS = 3
-
-normalSize = (640, 480)
-lowresSize = (320, 240)
-
-model = load_model('waste_classify_model.h5')
-
 def params(size):
     max = int(size**0.5)
     possible_sizes = [(i, size//i) for i in range(1, max+1) if size % i == 0]
@@ -58,15 +44,26 @@ def params(size):
     if width > height: width, height = height, width
     return width, height
 
-arr_img = []
-arr_prob = []
 def detect(i):
+    # Increasing the image size didn't result in increasing the training accuracy
+    arr_img = []
+    arr_prob = []
+    IMAGE_WIDTH = 224    
+    IMAGE_HEIGHT = 224
+    IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
+    IMAGE_CHANNELS = 3
+
+    normalSize = (640, 480)
+    lowresSize = (320, 240)
+
+    model = load_model('waste_classify_model.h5')
+
     img = image.load_img(i, target_size = IMAGE_SIZE)
     arr_img.append(img)
     img = image.img_to_array(img)
     img = np.expand_dims(img, axis = 0)
     preds = model.predict(img)
-    print(preds)
+    # print(preds)
     rev_dict = {0: 'battery', 1: 'biological', 2: 'brown-glass', 3: 'cardboard', 4: 'clothes', 5: 'green-glass', 6: 'metal', 7: 'paper', 8: 'plastic', 9: 'trash', 10: 'white-glass'}
 
     for i, p in enumerate(preds):
@@ -74,11 +71,11 @@ def detect(i):
         klass=rev_dict[index]    
         prob=p[index]
         arr_prob.append((prob, klass))
-    return arr_prob
+    return arr_prob[0]
 
-def main():
-    os.system("rpicam-jpeg -o test.jpg")
-    print(detect("test.jpg"))
+# def main():
+#     os.system("rpicam-jpeg -o test.jpg")
+#     # print(detect("test.jpg"))
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
